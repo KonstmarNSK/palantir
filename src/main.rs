@@ -1,75 +1,49 @@
-use iced::widget::{button, column, text, Column};
-use iced::{Element, Sandbox, Settings, Application};
+mod view;
+mod logic;
+mod executor;
+mod message;
+mod diary;
+mod state;
 
-// fn main() {
-//     println!("Hello, world!");
-// }
+use iced::{Element, Sandbox, Settings, Application, Command};
+use crate::executor::TokioRuntime;
+use crate::logic::process_message;
+use crate::message::Message;
+use crate::state::State;
 
 
 pub fn main() -> iced::Result {
-    <Counter as Sandbox>::run(Settings::default())
+    <Diary as Application>::run(Settings::default())
 }
 
-impl Sandbox for Counter {
-    type Message = Message;
 
-    fn new() -> Counter {
-        Counter { value: 0 }
+#[derive(Debug)]
+struct Diary {
+    state: State,
+}
+
+impl Application for Diary {
+    type Executor = TokioRuntime;
+    type Message = Message;
+    type Theme = iced::theme::Theme;
+    type Flags = ();
+
+    fn new(_: Self::Flags) -> (Diary, Command<Message>) {
+        let diary_state = diary::State::new();
+        let state = State { diary_state };
+
+        (Diary { state }, Command::none())
     }
 
     fn title(&self) -> String {
         String::from("A cool application")
     }
 
-    fn update(&mut self, message: Self::Message) {
-        Counter::update(self, message)
+    fn update(&mut self, message: Self::Message) -> Command<Message> {
+        process_message(&mut self.state, message)
     }
 
     fn view(&self) -> Element<Self::Message> {
         self.view().into()
-    }
-}
-
-
-#[derive(Debug)]
-struct Counter {
-    // The counter value
-    value: i32,
-}
-
-#[derive(Debug, Clone, Copy)]
-pub enum Message {
-    IncrementPressed,
-    DecrementPressed,
-}
-
-impl Counter {
-    pub fn view(&self) -> Column<Message> {
-        // We use a column: a simple vertical layout
-        column![
-            // The increment button. We tell it to produce an
-            // `IncrementPressed` message when pressed
-            button("+").on_press(Message::IncrementPressed),
-
-            // We show the value of the counter here
-            text(self.value).size(50),
-
-            // The decrement button. We tell it to produce a
-            // `DecrementPressed` message when pressed
-            button("-").on_press(Message::DecrementPressed),
-        ]
-    }
-}
-
-impl Counter {
-    pub fn update(&mut self, message: Message) {
-        match message {
-            Message::IncrementPressed => {
-                self.value += 1;
-            }
-            Message::DecrementPressed => {
-                self.value -= 1;
-            }
-        }
     }
 }
