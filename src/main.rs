@@ -5,7 +5,7 @@ mod message;
 mod diary;
 mod state;
 
-use iced::{Element, Sandbox, Settings, Application, Command};
+use iced::{Element, Settings, Application, Command};
 use crate::executor::TokioRuntime;
 use crate::logic::process_message;
 use crate::message::Message;

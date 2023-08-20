@@ -12,7 +12,7 @@ pub fn view_diary<TMsgOut, TMsgMapper>(diary_state: &State, mapper: TMsgMapper) 
 
     let text_field = text_input(
         "Write your thoughts here",
-        &diary_state.current_text,
+        &diary_state.current_text.body,
         move |s| mapper(CurrentTextEdited(s))
     ).size(150);
 

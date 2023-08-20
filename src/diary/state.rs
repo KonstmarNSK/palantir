@@ -1,10 +1,22 @@
-#[derive(Debug)]
+use crate::diary::storage::Storage;
+
+#[derive(Debug, Clone)]
 pub struct State {
-    pub current_text: String,
+    pub current_text: TextInfo,
+    pub storage: Storage,
 }
 
-impl State{
+#[derive(Debug, Clone)]
+pub struct TextInfo {
+    pub title: String,
+    pub body: String,
+}
+
+impl State {
     pub fn new() -> Self {
-        State{current_text: "".to_string()}
+        let current_text = TextInfo { title: "".to_string(), body: "".to_string() };
+        let storage = Storage{};
+
+        State { current_text, storage }
     }
 }
